@@ -1,3 +1,5 @@
+import javax.jms.JMSException;
+
 /**
  * @author Marc Karassev
  *
@@ -7,14 +9,14 @@ public class Client {
 
     private MiniTwitterClient miniTwitterClient;
 
-    public Client() {
+    public Client() throws JMSException {
         miniTwitterClient = new MiniTwitterClient();
     }
 
     /**
      * Runs a demonstration scenario.
      */
-    public void runDemonstration() {
+    public void runDemonstration() throws JMSException {
         miniTwitterClient.sendMessage("Hello!");
     }
 
@@ -24,8 +26,12 @@ public class Client {
      * @param args none
      */
     public static void main(String[] args) {
-        Client client = new Client();
+        try {
+            Client client = new Client();
 
-        client.runDemonstration();
+            client.runDemonstration();
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
     }
 }

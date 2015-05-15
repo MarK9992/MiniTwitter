@@ -1,4 +1,5 @@
 import javax.jms.*;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Set;
@@ -21,32 +22,28 @@ public class MiniTwitterClient implements MessageListener {
     /**
      * Default constructor, creates a new client which only subscribes to the default hash tag.
      */
-    public MiniTwitterClient() {
+    public MiniTwitterClient() throws JMSException{
         connect();
-        try {
-            ConnectionFactory factory = new ActiveMQConnectionFactory(MiniTwitterImpl.ACTIVE_MQ_USER,
-                    MiniTwitterImpl.ACTIVE_MQ_PASSWORD, MiniTwitterImpl.ACTIVE_MQ_HOST);
-            Connection connect = factory.createConnection(MiniTwitterImpl.ACTIVE_MQ_USER,
-                    MiniTwitterImpl.ACTIVE_MQ_PASSWORD);
-            session = connect.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Topic defaultTopic = session.createTopic(MiniTwitterImpl.DEFAULT_TOPIC);
-            MessageConsumer defaultTopicSubscriber = session.createConsumer(defaultTopic);
+        ConnectionFactory factory = new ActiveMQConnectionFactory(MiniTwitterImpl.ACTIVE_MQ_USER,
+                MiniTwitterImpl.ACTIVE_MQ_PASSWORD, MiniTwitterImpl.ACTIVE_MQ_HOST);
+        Connection connect = factory.createConnection(MiniTwitterImpl.ACTIVE_MQ_USER,
+                MiniTwitterImpl.ACTIVE_MQ_PASSWORD);
+        session = connect.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Topic defaultTopic = session.createTopic(MiniTwitterImpl.DEFAULT_TOPIC);
+        MessageConsumer defaultTopicSubscriber = session.createConsumer(defaultTopic);
 
-            defaultTopicPublisher = session.createProducer(defaultTopic);
-            defaultTopicSubscriber.setMessageListener(this);
-            connect.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        defaultTopicPublisher = session.createProducer(defaultTopic);
+        defaultTopicSubscriber.setMessageListener(this);
+        connect.start();
     }
 
     // connects to the MiniTwitterServer
     private void connect() {
         try {
-            String name = "MiniTwitter";
+            // TODO ask registry host
             Registry registry = LocateRegistry.getRegistry("localhost", Server.REGISTRY_PORT);
 
-            miniTwitter = (MiniTwitter) registry.lookup(name);
+            miniTwitter = (MiniTwitter) registry.lookup(Server.STUB_NAME);
             userName = "me";
             topics = miniTwitter.listTopics();
         } catch (Exception e) {
@@ -59,16 +56,12 @@ public class MiniTwitterClient implements MessageListener {
      *
      * @param contents the contents of the message to send
      */
-    public void sendMessage(String contents) {
-        try {
-            MapMessage message = session.createMapMessage();
+    public void sendMessage(String contents) throws JMSException {
+        MapMessage message = session.createMapMessage();
 
-            message.setString("author", userName);
-            message.setString("contents", contents);
-            defaultTopicPublisher.send(message);
-        } catch (JMSException e) {
-            e.printStackTrace();
-        }
+        message.setString("author", userName);
+        message.setString("contents", contents);
+        defaultTopicPublisher.send(message);
     }
 
     /**
