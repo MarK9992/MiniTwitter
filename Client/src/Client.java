@@ -1,10 +1,6 @@
 import javax.jms.*;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
@@ -18,10 +14,11 @@ public class Client implements MessageListener {
     private MiniTwitter miniTwitter;
     private Session session;
     private MessageProducer topicPublisher;
-    //private Map<String, Topic> topicMap;
 
+    /**
+     * Default constructor, creates a new client which only subscribes to the default hash tag.
+     */
     public Client() {
-        //topicMap = new HashMap<String, Topic>();
         connect();
         try {
             ConnectionFactory factory = new ActiveMQConnectionFactory("user", "password", "tcp://localhost:61616");
@@ -31,7 +28,6 @@ public class Client implements MessageListener {
             MessageConsumer topicSubscriber = session.createConsumer(topic);
 
             topicPublisher = session.createProducer(topic);
-            //topicMap.put("#HelloWorld", topic);
             topicSubscriber.setMessageListener(this);
             connect.start();
         } catch (Exception e) {
@@ -39,19 +35,21 @@ public class Client implements MessageListener {
         }
     }
 
+    // connects to the MiniTwitterServer
     private void connect() {
         try {
             String name = "MiniTwitter";
             Registry registry = LocateRegistry.getRegistry("localhost", Server.REGISTRY_PORT);
 
             miniTwitter = (MiniTwitter) registry.lookup(name);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (NotBoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Runs a demonstration scenario.
+     */
     public void runDemonstration() {
         try {
             MapMessage message = session.createMapMessage();
@@ -64,6 +62,11 @@ public class Client implements MessageListener {
         }
     }
 
+    /**
+     * Passes a message to the listener and prints it.
+     *
+     * @param message the message passed to the listener
+     */
     @Override
     public void onMessage(Message message) {
         MapMessage mapMessage = (MapMessage) message;
