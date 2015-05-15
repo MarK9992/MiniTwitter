@@ -6,6 +6,6 @@ Fonctionnel :
 - un utilisateur doit pouvoir consulter les notifications qu'il aurait dû recevoir durant son absence (déconnecté)
 
 Non fonctionnel :
-- utiliser JMS pour gérer les topics
-- utiliser RMI pour la communication client/server
+- utiliser JMS pour gérer les topics DONE
+- utiliser RMI pour la communication client/server DONE
 - persister les tweets/topics et les utilisateurs (ActiveMQ ?)
