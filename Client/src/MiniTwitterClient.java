@@ -1,6 +1,7 @@
 import javax.jms.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Set;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
@@ -13,8 +14,9 @@ public class MiniTwitterClient implements MessageListener {
 
     private MiniTwitter miniTwitter;
     private Session session;
-    private MessageProducer topicPublisher;
+    private MessageProducer defaultTopicPublisher;
     private String userName;
+    private Set<String> topics;
 
     /**
      * Default constructor, creates a new client which only subscribes to the default hash tag.
@@ -25,11 +27,11 @@ public class MiniTwitterClient implements MessageListener {
             ConnectionFactory factory = new ActiveMQConnectionFactory("user", "password", "tcp://localhost:61616");
             Connection connect = factory.createConnection("user", "password");
             session = connect.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Topic topic = session.createTopic(miniTwitter.listTopics().iterator().next());
-            MessageConsumer topicSubscriber = session.createConsumer(topic);
+            Topic defaultTopic = session.createTopic(MiniTwitterImpl.DEFAULT_TOPIC);
+            MessageConsumer defaultTopicSubscriber = session.createConsumer(defaultTopic);
 
-            topicPublisher = session.createProducer(topic);
-            topicSubscriber.setMessageListener(this);
+            defaultTopicPublisher = session.createProducer(defaultTopic);
+            defaultTopicSubscriber.setMessageListener(this);
             connect.start();
         } catch (Exception e) {
             e.printStackTrace();
@@ -44,6 +46,7 @@ public class MiniTwitterClient implements MessageListener {
 
             miniTwitter = (MiniTwitter) registry.lookup(name);
             userName = "me";
+            topics = miniTwitter.listTopics();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,7 +63,7 @@ public class MiniTwitterClient implements MessageListener {
 
             message.setString("author", userName);
             message.setString("contents", contents);
-            topicPublisher.send(message);
+            defaultTopicPublisher.send(message);
         } catch (JMSException e) {
             e.printStackTrace();
         }

@@ -13,6 +13,8 @@ import java.util.*;
  */
 public class MiniTwitterImpl implements MiniTwitter {
 
+    public static final String DEFAULT_TOPIC = "#HelloWorld";
+
     private Set<String> topics;
 
     /**
@@ -23,10 +25,10 @@ public class MiniTwitterImpl implements MiniTwitter {
             ConnectionFactory factory = new ActiveMQConnectionFactory("user", "password", "tcp://localhost:61616");
             Connection connect = factory.createConnection("user", "password");
             Session session = connect.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Topic topic = session.createTopic("#HelloWorld");
+            Topic defaultTopic = session.createTopic(DEFAULT_TOPIC);
 
             topics = new HashSet<String>();
-            topics.add(topic.getTopicName());
+            topics.add(defaultTopic.getTopicName());
         } catch (JMSException e) {
             e.printStackTrace();
         }
