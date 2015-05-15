@@ -1,3 +1,6 @@
+import org.apache.activemq.ActiveMQConnectionFactory;
+
+import javax.jms.*;
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -5,38 +8,27 @@ import java.util.*;
  * @author Marc Karassev
  *
  * Implements MiniTwitter's remote interface.
- * Has a map where keys are hashtags and values tweet lists.
+ * Keeps track of hashtags list.
+ * Creates the default hashtag.
  */
 public class MiniTwitterImpl implements MiniTwitter {
 
-    private HashMap<String, List<Tweet>> topics;
+    private Set<String> topics;
 
     /**
-     * Default constructor, constructs a new MiniTwitterServer with an empty map of topics and tweets.
+     * Default constructor, constructs a new MiniTwitterServer with a default hash tag.
      */
     public MiniTwitterImpl() {
-        topics = new HashMap<String, List<Tweet>>();
-    }
+        try {
+            ConnectionFactory factory = new ActiveMQConnectionFactory("user", "password", "tcp://localhost:61616");
+            Connection connect = factory.createConnection("user", "password");
+            Session session = connect.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Topic topic = session.createTopic("#HelloWorld");
 
-    /**
-     * Posts a new tweet.
-     *
-     * @param tag the tweet hash tag
-     * @param message the tweet
-     * @param author the tweet author
-     * @throws RemoteException
-     */
-    @Override
-    public void post(String tag, String message, String author) throws RemoteException {
-        tag = tag.trim();
-        if (topics.keySet().contains(tag)) {
-            topics.get(tag).add(new Tweet(author, message));
-        }
-        else {
-            ArrayList<Tweet> tweetList = new ArrayList<Tweet>();
-
-            tweetList.add(new Tweet(author, message));
-            topics.put(tag, tweetList);
+            topics = new HashSet<String>();
+            topics.add(topic.getTopicName());
+        } catch (JMSException e) {
+            e.printStackTrace();
         }
     }
 
@@ -48,18 +40,6 @@ public class MiniTwitterImpl implements MiniTwitter {
      */
     @Override
     public Set<String> listTopics() throws RemoteException {
-        return new HashSet<String>(topics.keySet());
-    }
-
-    /**
-     * Lists all tweets related to a hash tag.
-     *
-     * @param tag the hash tag
-     * @return a set of Tweet instances matching the tag, null if none
-     * @throws RemoteException
-     */
-    @Override
-    public List<Tweet> listTopicsTweets(String tag) throws RemoteException {
-        return topics.get(tag);
+        return topics;
     }
 }

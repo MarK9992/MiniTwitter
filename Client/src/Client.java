@@ -15,31 +15,30 @@ import org.apache.activemq.ActiveMQConnectionFactory;
  */
 public class Client implements MessageListener {
 
-    //private MiniTwitter miniTwitter;
+    private MiniTwitter miniTwitter;
     private Session session;
     private MessageProducer topicPublisher;
     //private Map<String, Topic> topicMap;
 
     public Client() {
         //topicMap = new HashMap<String, Topic>();
-        //connect();
+        connect();
         try {
             ConnectionFactory factory = new ActiveMQConnectionFactory("user", "password", "tcp://localhost:61616");
             Connection connect = factory.createConnection ("user", "password");
             session = connect.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Topic topic = session.createTopic("#HelloWorld");
+            Topic topic = session.createTopic(miniTwitter.listTopics().iterator().next());
             MessageConsumer topicSubscriber = session.createConsumer(topic);
-            topicPublisher = session.createProducer(topic); // TODO voir si on peut pas en faire un général (quand on envoie un message, on peut choisir la destination)
 
+            topicPublisher = session.createProducer(topic);
             //topicMap.put("#HelloWorld", topic);
             topicSubscriber.setMessageListener(this);
             connect.start();
-        } catch (JMSException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    /*
     private void connect() {
         try {
             String name = "MiniTwitter";
@@ -52,7 +51,6 @@ public class Client implements MessageListener {
             e.printStackTrace();
         }
     }
-    */
 
     public void runDemonstration() {
         try {
@@ -64,21 +62,12 @@ public class Client implements MessageListener {
         } catch (JMSException e) {
             e.printStackTrace();
         }
-        /*
-        try {
-            miniTwitter.post("#HelloWorld", "Hello!", "me");
-            System.out.println(miniTwitter.listTopics());
-            System.out.println(miniTwitter.listTopicsTweets("#HelloWorld"));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        */
     }
 
     @Override
     public void onMessage(Message message) {
         MapMessage mapMessage = (MapMessage) message;
-        
+
         try {
             System.out.println("message received, author: " + mapMessage.getString("author") + ", contents: "
                     + mapMessage.getString("contents"));
