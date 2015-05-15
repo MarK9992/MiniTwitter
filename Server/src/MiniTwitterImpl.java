@@ -13,7 +13,8 @@ import java.util.*;
  */
 public class MiniTwitterImpl implements MiniTwitter {
 
-    public static final String DEFAULT_TOPIC = "#HelloWorld";
+    public static final String DEFAULT_TOPIC = "#HelloWorld", ACTIVE_MQ_USER = "user", ACTIVE_MQ_PASSWORD = "password",
+        ACTIVE_MQ_HOST = "tcp://localhost:61616";
 
     private Set<String> topics;
 
@@ -22,8 +23,9 @@ public class MiniTwitterImpl implements MiniTwitter {
      */
     public MiniTwitterImpl() {
         try {
-            ConnectionFactory factory = new ActiveMQConnectionFactory("user", "password", "tcp://localhost:61616");
-            Connection connect = factory.createConnection("user", "password");
+            ConnectionFactory factory = new ActiveMQConnectionFactory(ACTIVE_MQ_USER, ACTIVE_MQ_PASSWORD,
+                    ACTIVE_MQ_HOST);
+            Connection connect = factory.createConnection(ACTIVE_MQ_USER, ACTIVE_MQ_PASSWORD);
             Session session = connect.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Topic defaultTopic = session.createTopic(DEFAULT_TOPIC);
 

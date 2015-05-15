@@ -24,8 +24,10 @@ public class MiniTwitterClient implements MessageListener {
     public MiniTwitterClient() {
         connect();
         try {
-            ConnectionFactory factory = new ActiveMQConnectionFactory("user", "password", "tcp://localhost:61616");
-            Connection connect = factory.createConnection("user", "password");
+            ConnectionFactory factory = new ActiveMQConnectionFactory(MiniTwitterImpl.ACTIVE_MQ_USER,
+                    MiniTwitterImpl.ACTIVE_MQ_PASSWORD, MiniTwitterImpl.ACTIVE_MQ_HOST);
+            Connection connect = factory.createConnection(MiniTwitterImpl.ACTIVE_MQ_USER,
+                    MiniTwitterImpl.ACTIVE_MQ_PASSWORD);
             session = connect.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Topic defaultTopic = session.createTopic(MiniTwitterImpl.DEFAULT_TOPIC);
             MessageConsumer defaultTopicSubscriber = session.createConsumer(defaultTopic);
