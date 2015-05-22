@@ -49,9 +49,7 @@ public class Client {
         topic = scanner.nextLine();
         System.out.println("Please type your message:");
         message = scanner.nextLine();
-        if (!miniTwitterClient.sendMessage(topic, message)) {
-            System.out.println("Error: unable to send the message. Be sure that the given hash tag was correct.");
-        }
+        miniTwitterClient.sendMessage(topic, message);
     }
 
     /**

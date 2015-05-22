@@ -58,26 +58,27 @@ public class MiniTwitterClient implements MessageListener {
     }
 
     /**
-     * Sends the given message to the specified topic.
+     * Sends the given message to the specified topic. Creates a new topic if the given one does not exist.
      *
-     * @param topic the topic to send the message to
+     * @param topicName the topic to send the message to
      * @param contents the contents of the message to send
-     * @return true on success, false otherwise
      */
-    public boolean sendMessage(String topic, String contents) throws JMSException {
+    public void sendMessage(String topicName, String contents) throws JMSException {
         MapMessage message = session.createMapMessage();
-        MessageProducer producer = topicMap.get(topic);
+        MessageProducer producer = topicMap.get(topicName);
 
-        if (producer != null) {
-            message.setString("author", userName);
-            message.setString("contents", contents);
-            producer.send(message);
-            return true;
+        message.setString("topic", topicName);
+        message.setString("author", userName);
+        message.setString("contents", contents);
+        if (producer == null) {
+            Topic topic = session.createTopic(topicName);
+            MessageConsumer consumer = session.createConsumer(topic);
+
+            producer = session.createProducer(topic);
+            topicMap.put(topicName, producer);
+            consumer.setMessageListener(this);
         }
-        else {
-            // TODO allow topic creation
-            return false;
-        }
+        producer.send(message);
     }
 
     /**
@@ -99,8 +100,8 @@ public class MiniTwitterClient implements MessageListener {
         MapMessage mapMessage = (MapMessage) message;
 
         try {
-            System.out.println("message received, author: " + mapMessage.getString("author") + ", contents: "
-                    + mapMessage.getString("contents"));
+            System.out.println("message received, topic: " + mapMessage.getString("topic") + ", author: "
+                    + mapMessage.getString("author") + ", contents: " + mapMessage.getString("contents"));
         } catch (JMSException e) {
             e.printStackTrace();
         }
