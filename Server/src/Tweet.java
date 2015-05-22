@@ -5,6 +5,8 @@ import java.util.Calendar;
  * @author Marc Karassev
  *
  * Tweet class, has an author, contents and a date.
+ *
+ * UNUSED
  */
 public class Tweet implements Serializable {
 
