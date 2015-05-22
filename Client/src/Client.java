@@ -39,9 +39,16 @@ public class Client {
 
     // allows the user to tweet
     private void tweet() throws JMSException {
-        // TODO allow to post in different topics
+        String topic, message;
+
+        // TODO list topics
+        System.out.println("Please type the hash tag you want to tweet to:");
+        topic = scanner.nextLine();
         System.out.println("Please type your message:");
-        miniTwitterClient.sendMessage(scanner.nextLine());
+        message = scanner.nextLine();
+        if (!miniTwitterClient.sendMessage(topic, message)) {
+            System.out.println("Error: unable to send the message. Be sure that the given hash tag was correct.");
+        }
     }
 
     /**

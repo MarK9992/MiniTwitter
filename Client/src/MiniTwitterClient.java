@@ -10,6 +10,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
  * @author Marc Karassev
  *
  * Client application to MiniTwitter.
+ * // TODO màj les commentaires
  */
 public class MiniTwitterClient implements MessageListener {
 
@@ -55,18 +56,29 @@ public class MiniTwitterClient implements MessageListener {
     }
 
     /**
-     * Sends a message to default topic.
+     * Sends the given message to the specified topic.
      *
+     * @param topic the topic to send the message to
      * @param contents the contents of the message to send
+     * @return true on success, false otherwise
      */
-    public void sendMessage(String contents) throws JMSException {
-        // TODO add topic string parameter
+    public boolean sendMessage(String topic, String contents) throws JMSException {
         MapMessage message = session.createMapMessage();
+        MessageProducer producer = topicMap.get(topic);
 
-        message.setString("author", userName);
-        message.setString("contents", contents);
-        topicMap.get(MiniTwitterImpl.DEFAULT_TOPIC).send(message);
+        if (producer != null) {
+            message.setString("author", userName);
+            message.setString("contents", contents);
+            producer.send(message);
+            return true;
+        }
+        else {
+            // TODO allow topic creation
+            return false;
+        }
     }
+
+    // TODO get topics
 
     /**
      * Passes a message to the listener and prints it.
