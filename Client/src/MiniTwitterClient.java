@@ -3,6 +3,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
@@ -79,7 +80,14 @@ public class MiniTwitterClient implements MessageListener {
         }
     }
 
-    // TODO get topics
+    /**
+     * Returns the hash tags set the user follows.
+     *
+     * @return the key set of the topicMap attribute
+     */
+    public Set<String> getTopics() {
+        return topicMap.keySet();
+    }
 
     /**
      * Passes a message to the listener and prints it.

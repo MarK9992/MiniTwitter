@@ -41,7 +41,10 @@ public class Client {
     private void tweet() throws JMSException {
         String topic, message;
 
-        // TODO list topics
+        System.out.println("Here is the hash tag list you subscribed:");
+        for (String listedTopic: miniTwitterClient.getTopics()) {
+            System.out.println(listedTopic);
+        }
         System.out.println("Please type the hash tag you want to tweet to:");
         topic = scanner.nextLine();
         System.out.println("Please type your message:");
