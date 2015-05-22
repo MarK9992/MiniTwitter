@@ -67,16 +67,24 @@ public class MiniTwitterClient implements MessageListener {
         MapMessage message = session.createMapMessage();
         MessageProducer producer = topicMap.get(topicName);
 
+        // TODO classe Tweet étandant MapMessage ?
         message.setString("topic", topicName);
         message.setString("author", userName);
         message.setString("contents", contents);
         if (producer == null) {
+            // TODO classe NewTopicMessage étandant MapMessage ?
             Topic topic = session.createTopic(topicName);
             MessageConsumer consumer = session.createConsumer(topic);
+            MapMessage newTopicMessage = session.createMapMessage();
 
             producer = session.createProducer(topic);
             topicMap.put(topicName, producer);
             consumer.setMessageListener(this);
+            newTopicMessage.setString("topic", MiniTwitterImpl.NEW_TOPICS_TOPIC);
+            newTopicMessage.setString("author", userName);
+            newTopicMessage.setString("contents", "new topic: " + topicName);
+            newTopicMessage.setString("new topic", topicName);
+            topicMap.get(MiniTwitterImpl.NEW_TOPICS_TOPIC).send(newTopicMessage);
         }
         producer.send(message);
     }
@@ -99,6 +107,7 @@ public class MiniTwitterClient implements MessageListener {
     public void onMessage(Message message) {
         MapMessage mapMessage = (MapMessage) message;
 
+        // TODO faire la différence entre new topics et tweet normal et màj la topicMap
         try {
             System.out.println("message received, topic: " + mapMessage.getString("topic") + ", author: "
                     + mapMessage.getString("author") + ", contents: " + mapMessage.getString("contents"));

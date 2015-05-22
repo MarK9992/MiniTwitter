@@ -9,17 +9,18 @@ import java.util.*;
  *
  * Implements MiniTwitter's remote interface.
  * Keeps track of hashtags list.
- * Creates the default hashtag.
+ * Creates the default hashtag and the dedicated to new hashtags one.
  */
-public class MiniTwitterImpl implements MiniTwitter {
+public class MiniTwitterImpl implements MiniTwitter, MessageListener {
 
-    public static final String DEFAULT_TOPIC = "#HelloWorld", ACTIVE_MQ_USER = "user", ACTIVE_MQ_PASSWORD = "password",
-        ACTIVE_MQ_HOST = "tcp://localhost:61616";
+    public static final String DEFAULT_TOPIC = "#HelloWorld", NEW_TOPICS_TOPIC = "#NewTopics", ACTIVE_MQ_USER = "user",
+            ACTIVE_MQ_PASSWORD = "password", ACTIVE_MQ_HOST = "tcp://localhost:61616";
 
     private Set<String> topics;
 
     /**
-     * Default constructor, constructs a new MiniTwitterServer with a default hash tag.
+     * Default constructor, constructs a new MiniTwitterServer with a default hash tag and the one dedicated to new
+     * ones.
      */
     public MiniTwitterImpl() {
         try {
@@ -27,10 +28,14 @@ public class MiniTwitterImpl implements MiniTwitter {
                     ACTIVE_MQ_HOST);
             Connection connect = factory.createConnection(ACTIVE_MQ_USER, ACTIVE_MQ_PASSWORD);
             Session session = connect.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Topic defaultTopic = session.createTopic(DEFAULT_TOPIC);
+            MessageConsumer newTopicsConsumer = session.createConsumer(session.createTopic(NEW_TOPICS_TOPIC));
 
+            session.createTopic(DEFAULT_TOPIC);
             topics = new HashSet<String>();
-            topics.add(defaultTopic.getTopicName());
+            topics.add(DEFAULT_TOPIC);
+            topics.add(NEW_TOPICS_TOPIC);
+            newTopicsConsumer.setMessageListener(this);
+            connect.start();
         } catch (JMSException e) {
             e.printStackTrace();
         }
@@ -44,6 +49,23 @@ public class MiniTwitterImpl implements MiniTwitter {
      */
     @Override
     public Set<String> listTopics() throws RemoteException {
+        // TODO sécuriser NEW_TOPICS_TOPIC
         return topics;
+    }
+
+    /**
+     * Passes a message to the listener and gets the new topic from it.
+     *
+     * @param message the message passed to the listener containing the new topic information
+     */
+    @Override
+    public void onMessage(Message message) {
+        MapMessage mapMessage = (MapMessage) message;
+
+        try {
+            topics.add(mapMessage.getString("new topic"));
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
     }
 }
