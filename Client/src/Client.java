@@ -30,7 +30,6 @@ public class Client {
                     tweet();
                     break;
                 case 2:
-                    scanner.nextLine();
                     run = false;
                     break;
                 default:
@@ -40,7 +39,9 @@ public class Client {
 
     // allows the user to tweet
     private void tweet() throws JMSException {
-        miniTwitterClient.sendMessage("Hello!");
+        // TODO allow to post in different topics
+        System.out.println("Please type your message:");
+        miniTwitterClient.sendMessage(scanner.nextLine());
     }
 
     /**
