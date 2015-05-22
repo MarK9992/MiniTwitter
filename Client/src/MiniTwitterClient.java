@@ -10,7 +10,8 @@ import org.apache.activemq.ActiveMQConnectionFactory;
  * @author Marc Karassev
  *
  * Client application to MiniTwitter.
- * // TODO màj les commentaires
+ * Keeps track of the server and the user's username.
+ * Has a JMS session and a map of hash tags the user follows as keys and related JMS message producers as values.
  */
 public class MiniTwitterClient implements MessageListener {
 
@@ -20,7 +21,7 @@ public class MiniTwitterClient implements MessageListener {
     private String userName;
 
     /**
-     * Default constructor, creates a new client which only subscribes to the default hash tag.
+     * Default constructor, creates a new client that subscribes to all the server hash tags.
      */
     public MiniTwitterClient() throws JMSException{
         ConnectionFactory factory = new ActiveMQConnectionFactory(MiniTwitterImpl.ACTIVE_MQ_USER,
