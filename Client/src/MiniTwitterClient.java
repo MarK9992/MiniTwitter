@@ -99,7 +99,8 @@ public class MiniTwitterClient implements MessageListener {
     }
 
     /**
-     * Passes a message to the listener and prints it.
+     * Passes a message to the listener and prints it. If it is a new topic message, automatically follows the related
+     * new hash tag.
      *
      * @param message the message passed to the listener
      */
@@ -107,10 +108,15 @@ public class MiniTwitterClient implements MessageListener {
     public void onMessage(Message message) {
         MapMessage mapMessage = (MapMessage) message;
 
-        // TODO faire la différence entre new topics et tweet normal et màj la topicMap
         try {
             System.out.println("message received, topic: " + mapMessage.getString("topic") + ", author: "
                     + mapMessage.getString("author") + ", contents: " + mapMessage.getString("contents"));
+            if (mapMessage.getString("topic").equals(MiniTwitterImpl.NEW_TOPICS_TOPIC)) {
+                // TODO en réalité faire une fonction "s'abonner" plutôt que de le faire automatiquement
+                Topic topic = session.createTopic(mapMessage.getString("new topic"));
+                session.createConsumer(topic).setMessageListener(this);
+                topicMap.put(mapMessage.getString("new topic"), session.createProducer(topic));
+            }
         } catch (JMSException e) {
             e.printStackTrace();
         }
