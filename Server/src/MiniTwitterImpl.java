@@ -80,6 +80,22 @@ public class MiniTwitterImpl implements MiniTwitter, MessageListener {
     }
 
     /**
+     * Adds the given topic to the topics followed by the given user.
+     *
+     * @param user the user adding subscription
+     * @param topic the topic the user subscribes to
+     * @throws RemoteException
+     */
+    @Override
+    public void addSubscription(String user, String topic) throws RemoteException {
+        // TODO check if user exists
+        Set<String> topics = userTopics.get(user);
+
+        topics.add(topic);
+        userTopics.put(user, topics);
+    }
+
+    /**
      * Passes a message to the listener and gets the new topic from it.
      *
      * @param message the message passed to the listener containing the new topic information

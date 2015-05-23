@@ -3,10 +3,10 @@ Fonctionnel :
 - un utilisateur doit pouvoir retweeter un Tweet
 - un utilisateur doit pouvoir se connecter/déconnecter pour accéder aux fonctionnalités (proxy)
 - un utilisateur doit être notifié quand son tweet est retweeté ou qu'un nouveau topic/hashtag est créé DONE
-- un utilisateur doit pouvoir consulter les notifications qu'il aurait dû recevoir durant son absence (déconnecté)
+- un utilisateur doit pouvoir consulter les notifications qu'il aurait dû recevoir durant son absence (déconnecté) DONE
 
 Non fonctionnel :
 - utiliser JMS pour gérer les topics DONE
 - utiliser RMI pour la communication client/server DONE
-- persister les tweets/topics
+- persister les tweets/topics DONE
 - persister les utilisateurs ?

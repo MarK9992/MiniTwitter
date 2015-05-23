@@ -27,4 +27,13 @@ public interface MiniTwitter extends Remote {
      * @throws RemoteException
      */
     public Set<String> connect(String login) throws RemoteException;
+
+    /**
+     * Adds the given topic to the topics followed by the given user.
+     *
+     * @param user the user adding subscription
+     * @param topic the topic the user subscribes to
+     * @throws RemoteException
+     */
+    public void addSubscription(String user, String topic) throws RemoteException;
 }

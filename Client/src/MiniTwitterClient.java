@@ -75,6 +75,11 @@ public class MiniTwitterClient implements MessageListener {
             producer = session.createProducer(topic);
             topicMap.put(topicName, producer);
             consumer.setMessageListener(this);
+            try {
+                miniTwitter.addSubscription(userName, topicName);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
             newTopicMessage.setString(TOPIC_KEY, MiniTwitterImpl.NEW_TOPICS_TOPIC);
             newTopicMessage.setString(AUTHOR_KEY, userName);
             newTopicMessage.setString(DATE_KEY, Calendar.getInstance().getTime().toString());
@@ -104,6 +109,11 @@ public class MiniTwitterClient implements MessageListener {
                     Topic topic = session.createTopic(topicName);
 
                     session.createDurableSubscriber(topic, userName + topicName).setMessageListener(this);
+                    try {
+                        miniTwitter.addSubscription(userName, topicName);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                     topicMap.put(topicName, session.createProducer(topic));
                     return true;
                 }
