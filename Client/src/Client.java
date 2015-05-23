@@ -1,9 +1,7 @@
 import javax.jms.JMSException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.HashSet;
 import java.util.Scanner;
-import java.util.Set;
 
 /**
  * @author Marc Karassev
@@ -22,15 +20,15 @@ public class Client {
      */
     public Client() throws JMSException {
         try {
-            // TODO ask registry host
-            Registry registry = LocateRegistry.getRegistry("localhost", Server.REGISTRY_PORT);
+            scanner = new Scanner(System.in);
+            System.out.println("Please enter the server's host:");
+            Registry registry = LocateRegistry.getRegistry(scanner.nextLine(), Server.REGISTRY_PORT);
             MiniTwitterConnection miniTwitterConnection = (MiniTwitterConnection) registry.lookup(Server.STUB_NAME);
-            MiniTwitter miniTwitter = null;
+            MiniTwitter miniTwitter;
             String login, password;
 
-            scanner = new Scanner(System.in);
             do {
-                System.out.println("What's your username?");
+                System.out.println("What's your username? (if you don't have an account, it will be created)");
                 login = scanner.nextLine();
                 System.out.println("What's your password?");
                 password = scanner.nextLine();
@@ -42,7 +40,7 @@ public class Client {
                     System.out.println("Connection success!");
                 }
             } while (miniTwitter == null);
-            miniTwitterClient = new MiniTwitterClient(miniTwitter, miniTwitter.connect(login), login);
+            miniTwitterClient = new MiniTwitterClient(miniTwitter, miniTwitter.getUserTopics(login), login);
         } catch (Exception e) {
             e.printStackTrace();
         }

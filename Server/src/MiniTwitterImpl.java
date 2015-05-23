@@ -63,7 +63,7 @@ public class MiniTwitterImpl implements MiniTwitter, MessageListener {
      * @throws RemoteException
      */
     @Override
-    public Set<String> connect(String login) throws RemoteException {
+    public Set<String> getUserTopics(String login) throws RemoteException {
         if (userTopics.containsKey(login)) {
             return userTopics.get(login);
         }

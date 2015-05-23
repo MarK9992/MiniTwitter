@@ -10,8 +10,6 @@ import java.util.Set;
  */
 public interface MiniTwitter extends Remote, Serializable {
 
-    // TODO sécuriser listTopics() et addsubscription + ajouter getUserTopics dans une autre interface Remote renvoyée par connect
-
     /**
      * Lists all hash tags.
      *
@@ -28,7 +26,7 @@ public interface MiniTwitter extends Remote, Serializable {
      * @return a set of string representing hash tags
      * @throws RemoteException
      */
-    public Set<String> connect(String login) throws RemoteException;
+    public Set<String> getUserTopics(String login) throws RemoteException;
 
     /**
      * Adds the given topic to the topics followed by the given user.

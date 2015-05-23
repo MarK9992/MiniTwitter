@@ -79,6 +79,7 @@ public class MiniTwitterClient implements MessageListener {
                 if (!miniTwitter.listTopics().contains(topicName)) {
                     MapMessage newTopicMessage = session.createMapMessage();
 
+                    // TODO duplication du code de création de messages
                     newTopicMessage.setString(TOPIC_KEY, MiniTwitterImpl.NEW_TOPICS_TOPIC);
                     newTopicMessage.setString(AUTHOR_KEY, userName);
                     newTopicMessage.setString(DATE_KEY, Calendar.getInstance().getTime().toString());
@@ -148,6 +149,7 @@ public class MiniTwitterClient implements MessageListener {
     public void onMessage(Message message) {
         MapMessage mapMessage = (MapMessage) message;
 
+        // TODO très sale, le message reçu devrait être stocké et lu à la demande de l'utilisateur dans la démonstration
         try {
             System.out.println("tweet received, topic: " + mapMessage.getString(TOPIC_KEY) + ", author: "
                     + mapMessage.getString(AUTHOR_KEY) + ", date: " + mapMessage.getString(DATE_KEY)
