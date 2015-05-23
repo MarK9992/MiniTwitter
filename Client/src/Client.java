@@ -25,13 +25,13 @@ public class Client {
             // TODO ask registry host
             Registry registry = LocateRegistry.getRegistry("localhost", Server.REGISTRY_PORT);
             MiniTwitter miniTwitter = (MiniTwitter) registry.lookup(Server.STUB_NAME);
-            Set<String> topics = new HashSet<String>();
+            Set<String> topics;
+            String login;
 
-            topics.add(MiniTwitterImpl.DEFAULT_TOPIC);
-            topics.add(MiniTwitterImpl.NEW_TOPICS_TOPIC);
             scanner = new Scanner(System.in);
             System.out.println("What's your username?");
-            miniTwitterClient = new MiniTwitterClient(miniTwitter, topics, scanner.nextLine());
+            login = scanner.nextLine();
+            miniTwitterClient = new MiniTwitterClient(miniTwitter, miniTwitter.connect(login), login);
         } catch (Exception e) {
             e.printStackTrace();
         }

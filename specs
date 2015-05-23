@@ -8,4 +8,5 @@ Fonctionnel :
 Non fonctionnel :
 - utiliser JMS pour gérer les topics DONE
 - utiliser RMI pour la communication client/server DONE
-- persister les tweets/topics et les utilisateurs (ActiveMQ ?)
+- persister les tweets/topics
+- persister les utilisateurs ?

@@ -17,6 +17,7 @@ public class MiniTwitterImpl implements MiniTwitter, MessageListener {
             ACTIVE_MQ_PASSWORD = "password", ACTIVE_MQ_HOST = "tcp://localhost:61616";
 
     private Set<String> topics;
+    private Map<String, Set<String>> userTopics;
 
     /**
      * Default constructor, constructs a new MiniTwitterServer with a default hash tag and the one dedicated to new
@@ -34,6 +35,9 @@ public class MiniTwitterImpl implements MiniTwitter, MessageListener {
             topics = new HashSet<String>();
             topics.add(DEFAULT_TOPIC);
             topics.add(NEW_TOPICS_TOPIC);
+            userTopics = new HashMap<String, Set<String>>();
+            userTopics.put("Marc", new HashSet<String>(topics));
+            userTopics.put("Quentin", new HashSet<String>(topics));
             newTopicsConsumer.setMessageListener(this);
             connect.start();
         } catch (JMSException e) {
@@ -50,6 +54,29 @@ public class MiniTwitterImpl implements MiniTwitter, MessageListener {
     @Override
     public Set<String> listTopics() throws RemoteException {
         return topics;
+    }
+
+    /**
+     * Connects a user given his login and password. If the user does not exists, created an account. Returns the set
+     * of hash tags the matching user follows.
+     *
+     * @param login the user's login
+     * @return a set of string representing hash tags
+     * @throws RemoteException
+     */
+    @Override
+    public Set<String> connect(String login) throws RemoteException {
+        if (userTopics.containsKey(login)) {
+            return userTopics.get(login);
+        }
+        else {
+            HashSet<String> defaultTopics = new HashSet<String>();
+
+            defaultTopics.add(DEFAULT_TOPIC);
+            defaultTopics.add(NEW_TOPICS_TOPIC);
+            userTopics.put(login, defaultTopics);
+            return defaultTopics;
+        }
     }
 
     /**
