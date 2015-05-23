@@ -1,4 +1,6 @@
 import javax.jms.JMSException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Scanner;
 
 /**
@@ -11,9 +13,22 @@ public class Client {
     private MiniTwitterClient miniTwitterClient;
     private Scanner scanner;
 
+    /**
+     * Connects to the MiniTwitterServer and initializes the client.
+     *
+     * @throws JMSException
+     */
     public Client() throws JMSException {
-        miniTwitterClient = new MiniTwitterClient();
-        scanner = new Scanner(System.in);
+        try {
+            // TODO ask registry host
+            Registry registry = LocateRegistry.getRegistry("localhost", Server.REGISTRY_PORT);
+            MiniTwitter miniTwitter = (MiniTwitter) registry.lookup(Server.STUB_NAME);
+
+            miniTwitterClient = new MiniTwitterClient(miniTwitter, miniTwitter.listTopics(), "me");
+            scanner = new Scanner(System.in);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -1,7 +1,5 @@
 import javax.jms.*;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.*;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -27,39 +25,30 @@ public class MiniTwitterClient implements MessageListener {
     /**
      * Default constructor, creates a new client that subscribes to all the server hash tags.
      *
+     * @param miniTwitter the server
+     * @param topics the list of topics to subscribe
+     * @param userName the user's name
      * @throws JMSException
      */
-    public MiniTwitterClient() throws JMSException {
+    public MiniTwitterClient(MiniTwitter miniTwitter, Set<String> topics, String userName) throws JMSException {
         ConnectionFactory factory = new ActiveMQConnectionFactory(MiniTwitterImpl.ACTIVE_MQ_USER,
                 MiniTwitterImpl.ACTIVE_MQ_PASSWORD, MiniTwitterImpl.ACTIVE_MQ_HOST);
         Connection connect = factory.createConnection(MiniTwitterImpl.ACTIVE_MQ_USER,
                 MiniTwitterImpl.ACTIVE_MQ_PASSWORD);
+        Topic topic;
+        MessageConsumer consumer;
 
         session = connect.createSession(false, Session.AUTO_ACKNOWLEDGE);
         topicMap = new HashMap<String, MessageProducer>();
-        connectToServer();
-        connect.start();
-    }
-
-    // connects to the MiniTwitterServer and initializes topic list
-    private void connectToServer() {
-        try {
-            // TODO ask registry host
-            Registry registry = LocateRegistry.getRegistry("localhost", Server.REGISTRY_PORT);
-            Topic topic;
-            MessageConsumer consumer;
-
-            miniTwitter = (MiniTwitter) registry.lookup(Server.STUB_NAME);
-            userName = "me";
-            for (String topicName: miniTwitter.listTopics()) {
-                topic = session.createTopic(topicName);
-                consumer = session.createConsumer(topic);
-                topicMap.put(topicName, session.createProducer(topic));
-                consumer.setMessageListener(this);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        this.miniTwitter = miniTwitter;
+        this.userName = userName;
+        for (String topicName: topics) {
+            topic = session.createTopic(topicName);
+            consumer = session.createConsumer(topic);
+            topicMap.put(topicName, session.createProducer(topic));
+            consumer.setMessageListener(this);
         }
+        connect.start();
     }
 
     /**
