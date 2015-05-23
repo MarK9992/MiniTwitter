@@ -1,6 +1,7 @@
 import javax.jms.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -73,6 +74,7 @@ public class MiniTwitterClient implements MessageListener {
 
         message.setString(TOPIC_KEY, topicName);
         message.setString(AUTHOR_KEY, userName);
+        message.setString(DATE_KEY, Calendar.getInstance().getTime().toString());
         message.setString(CONTENTS_KEY, contents);
         if (producer == null) {
             Topic topic = session.createTopic(topicName);
@@ -84,6 +86,7 @@ public class MiniTwitterClient implements MessageListener {
             consumer.setMessageListener(this);
             newTopicMessage.setString(TOPIC_KEY, MiniTwitterImpl.NEW_TOPICS_TOPIC);
             newTopicMessage.setString(AUTHOR_KEY, userName);
+            newTopicMessage.setString(DATE_KEY, Calendar.getInstance().getTime().toString());
             newTopicMessage.setString(CONTENTS_KEY, "new topic: " + topicName);
             newTopicMessage.setString(NEW_TOPIC_KEY, topicName);
             topicMap.get(MiniTwitterImpl.NEW_TOPICS_TOPIC).send(newTopicMessage);
@@ -111,8 +114,9 @@ public class MiniTwitterClient implements MessageListener {
         MapMessage mapMessage = (MapMessage) message;
 
         try {
-            System.out.println("message received, topic: " + mapMessage.getString(TOPIC_KEY) + ", author: "
-                    + mapMessage.getString(AUTHOR_KEY) + ", contents: " + mapMessage.getString(CONTENTS_KEY));
+            System.out.println("tweet received, topic: " + mapMessage.getString(TOPIC_KEY) + ", author: "
+                    + mapMessage.getString(AUTHOR_KEY) + ", date: " + mapMessage.getString(DATE_KEY)
+                    + ", contents: " + mapMessage.getString(CONTENTS_KEY));
             if (mapMessage.getString(TOPIC_KEY).equals(MiniTwitterImpl.NEW_TOPICS_TOPIC)) {
                 // TODO en réalité faire une fonction "s'abonner" plutôt que de le faire automatiquement
                 String newTopic = mapMessage.getString(NEW_TOPIC_KEY);
