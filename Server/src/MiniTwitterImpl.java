@@ -8,7 +8,7 @@ import java.util.*;
  * @author Marc Karassev
  *
  * Implements MiniTwitter's remote interface.
- * Keeps track of hashtags list.
+ * Keeps track of hashtags list and user's subscribed hashtags.
  * Creates the default hashtag and the dedicated to new hashtags one.
  */
 public class MiniTwitterImpl implements MiniTwitter, MessageListener {
@@ -21,7 +21,7 @@ public class MiniTwitterImpl implements MiniTwitter, MessageListener {
 
     /**
      * Default constructor, constructs a new MiniTwitterServer with a default hash tag and the one dedicated to new
-     * ones.
+     * ones. Also adds to the users map to users with default subscriptions.
      */
     public MiniTwitterImpl() {
         try {
