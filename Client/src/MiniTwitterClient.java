@@ -130,7 +130,7 @@ public class MiniTwitterClient implements MessageListener {
      * @return a set of strings containing hash tags
      */
     public Set<String> getTopics() {
-        Set<String> topics = topicMap.keySet();
+        Set<String> topics = new HashSet<String>(topicMap.keySet());
 
         topics.remove(MiniTwitterImpl.NEW_TOPICS_TOPIC);
         return topics;
