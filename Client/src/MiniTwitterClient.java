@@ -23,7 +23,7 @@ public class MiniTwitterClient implements MessageListener {
     private String userName;
 
     /**
-     * Default constructor, creates a new client that subscribes to all the given hash tags.
+     * Creates a new client that subscribes to all the given hash tags.
      *
      * @param miniTwitter the server
      * @param topics the list of hash tags to subscribe to
