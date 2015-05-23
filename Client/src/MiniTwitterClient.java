@@ -16,6 +16,10 @@ import org.apache.activemq.ActiveMQConnectionFactory;
  */
 public class MiniTwitterClient implements MessageListener {
 
+    // keys in map messages
+    public static final String TOPIC_KEY = "topic", AUTHOR_KEY = "author", CONTENTS_KEY = "contents", DATE_KEY = "DATE",
+            NEW_TOPIC_KEY = "new topic";
+
     private MiniTwitter miniTwitter;
     private Session session;
     private Map<String, MessageProducer> topicMap;
@@ -67,12 +71,10 @@ public class MiniTwitterClient implements MessageListener {
         MapMessage message = session.createMapMessage();
         MessageProducer producer = topicMap.get(topicName);
 
-        // TODO classe Tweet étandant MapMessage ?
-        message.setString("topic", topicName);
-        message.setString("author", userName);
-        message.setString("contents", contents);
+        message.setString(TOPIC_KEY, topicName);
+        message.setString(AUTHOR_KEY, userName);
+        message.setString(CONTENTS_KEY, contents);
         if (producer == null) {
-            // TODO classe NewTopicMessage étandant MapMessage ?
             Topic topic = session.createTopic(topicName);
             MessageConsumer consumer = session.createConsumer(topic);
             MapMessage newTopicMessage = session.createMapMessage();
@@ -80,10 +82,10 @@ public class MiniTwitterClient implements MessageListener {
             producer = session.createProducer(topic);
             topicMap.put(topicName, producer);
             consumer.setMessageListener(this);
-            newTopicMessage.setString("topic", MiniTwitterImpl.NEW_TOPICS_TOPIC);
-            newTopicMessage.setString("author", userName);
-            newTopicMessage.setString("contents", "new topic: " + topicName);
-            newTopicMessage.setString("new topic", topicName);
+            newTopicMessage.setString(TOPIC_KEY, MiniTwitterImpl.NEW_TOPICS_TOPIC);
+            newTopicMessage.setString(AUTHOR_KEY, userName);
+            newTopicMessage.setString(CONTENTS_KEY, "new topic: " + topicName);
+            newTopicMessage.setString(NEW_TOPIC_KEY, topicName);
             topicMap.get(MiniTwitterImpl.NEW_TOPICS_TOPIC).send(newTopicMessage);
         }
         producer.send(message);
@@ -109,13 +111,15 @@ public class MiniTwitterClient implements MessageListener {
         MapMessage mapMessage = (MapMessage) message;
 
         try {
-            System.out.println("message received, topic: " + mapMessage.getString("topic") + ", author: "
-                    + mapMessage.getString("author") + ", contents: " + mapMessage.getString("contents"));
-            if (mapMessage.getString("topic").equals(MiniTwitterImpl.NEW_TOPICS_TOPIC)) {
+            System.out.println("message received, topic: " + mapMessage.getString(TOPIC_KEY) + ", author: "
+                    + mapMessage.getString(AUTHOR_KEY) + ", contents: " + mapMessage.getString(CONTENTS_KEY));
+            if (mapMessage.getString(TOPIC_KEY).equals(MiniTwitterImpl.NEW_TOPICS_TOPIC)) {
                 // TODO en réalité faire une fonction "s'abonner" plutôt que de le faire automatiquement
-                Topic topic = session.createTopic(mapMessage.getString("new topic"));
+                String newTopic = mapMessage.getString(NEW_TOPIC_KEY);
+                Topic topic = session.createTopic(newTopic);
+
                 session.createConsumer(topic).setMessageListener(this);
-                topicMap.put(mapMessage.getString("new topic"), session.createProducer(topic));
+                topicMap.put(newTopic, session.createProducer(topic));
             }
         } catch (JMSException e) {
             e.printStackTrace();

@@ -63,7 +63,7 @@ public class MiniTwitterImpl implements MiniTwitter, MessageListener {
         MapMessage mapMessage = (MapMessage) message;
 
         try {
-            topics.add(mapMessage.getString("new topic"));
+            topics.add(mapMessage.getString(MiniTwitterClient.NEW_TOPIC_KEY));
         } catch (JMSException e) {
             e.printStackTrace();
         }
