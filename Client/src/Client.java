@@ -24,13 +24,24 @@ public class Client {
         try {
             // TODO ask registry host
             Registry registry = LocateRegistry.getRegistry("localhost", Server.REGISTRY_PORT);
-            MiniTwitter miniTwitter = (MiniTwitter) registry.lookup(Server.STUB_NAME);
-            Set<String> topics;
-            String login;
+            MiniTwitterConnection miniTwitterConnection = (MiniTwitterConnection) registry.lookup(Server.STUB_NAME);
+            MiniTwitter miniTwitter = null;
+            String login, password;
 
             scanner = new Scanner(System.in);
-            System.out.println("What's your username?");
-            login = scanner.nextLine();
+            do {
+                System.out.println("What's your username?");
+                login = scanner.nextLine();
+                System.out.println("What's your password?");
+                password = scanner.nextLine();
+                miniTwitter = miniTwitterConnection.connect(login, password);
+                if (miniTwitter == null) {
+                    System.out.println("Wrong password.");
+                }
+                else {
+                    System.out.println("Connection success!");
+                }
+            } while (miniTwitter == null);
             miniTwitterClient = new MiniTwitterClient(miniTwitter, miniTwitter.connect(login), login);
         } catch (Exception e) {
             e.printStackTrace();

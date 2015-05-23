@@ -19,14 +19,15 @@ public class Server {
      */
     public static void main(String[] args) {
         try {
-            MiniTwitter miniTwitterImpl = new MiniTwitterImpl();
-            MiniTwitter stub = (MiniTwitter) UnicastRemoteObject.exportObject(miniTwitterImpl, MINI_TWITTER_PORT);
+            MiniTwitterConnection miniTwitterConnectionImpl = new MiniTwitterConnectionImpl();
+            MiniTwitterConnection stub = (MiniTwitterConnection)
+                    UnicastRemoteObject.exportObject(miniTwitterConnectionImpl, MINI_TWITTER_PORT);
             Registry registry = LocateRegistry.getRegistry(REGISTRY_PORT);
 
             registry.rebind(STUB_NAME, stub);
-            System.out.println("MiniTwitterServer bound");
+            System.out.println("MiniTwitterConnection bound");
         } catch (Exception e) {
-            System.err.println("MiniTwitterServer exception:");
+            System.err.println("MiniTwitterConnection exception:");
             e.printStackTrace();
         }
     }

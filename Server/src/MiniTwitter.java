@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Set;
@@ -7,7 +8,7 @@ import java.util.Set;
  *
  * MiniTwitter's remote interface. Defines remote methods available to system's users.
  */
-public interface MiniTwitter extends Remote {
+public interface MiniTwitter extends Remote, Serializable {
 
     // TODO sécuriser listTopics() et addsubscription + ajouter getUserTopics dans une autre interface Remote renvoyée par connect
 
