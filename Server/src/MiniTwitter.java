@@ -9,6 +9,8 @@ import java.util.Set;
  */
 public interface MiniTwitter extends Remote {
 
+    // TODO sécuriser listTopics() et addsubscription + ajouter getUserTopics dans une autre interface Remote renvoyée par connect
+
     /**
      * Lists all hash tags.
      *
