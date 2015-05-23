@@ -2,10 +2,7 @@ import javax.jms.*;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
@@ -30,7 +27,7 @@ public class MiniTwitterClient implements MessageListener {
     /**
      * Default constructor, creates a new client that subscribes to all the server hash tags.
      */
-    public MiniTwitterClient() throws JMSException{
+    public MiniTwitterClient() throws JMSException {
         ConnectionFactory factory = new ActiveMQConnectionFactory(MiniTwitterImpl.ACTIVE_MQ_USER,
                 MiniTwitterImpl.ACTIVE_MQ_PASSWORD, MiniTwitterImpl.ACTIVE_MQ_HOST);
         Connection connect = factory.createConnection(MiniTwitterImpl.ACTIVE_MQ_USER,
@@ -103,7 +100,7 @@ public class MiniTwitterClient implements MessageListener {
      * @throws JMSException
      */
     public boolean subscribeToTopic(String topicName) throws JMSException {
-        for (String subscribedTopic: getTopics()) {
+        for (String subscribedTopic: topicMap.keySet()) {
             if (subscribedTopic.equals(topicName)) {
                 return true;
             }
@@ -125,12 +122,15 @@ public class MiniTwitterClient implements MessageListener {
     }
 
     /**
-     * Returns the hash tags set the user follows.
+     * Returns the hash tags set the user follows except the one dedicated to new ones.
      *
-     * @return the key set of the topicMap attribute
+     * @return a set of strings containing hash tags
      */
     public Set<String> getTopics() {
-        return topicMap.keySet();
+        Set<String> topics = topicMap.keySet();
+
+        topics.remove(MiniTwitterImpl.NEW_TOPICS_TOPIC);
+        return topics;
     }
 
     /**

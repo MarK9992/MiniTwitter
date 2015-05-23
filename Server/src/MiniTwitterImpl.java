@@ -49,7 +49,6 @@ public class MiniTwitterImpl implements MiniTwitter, MessageListener {
      */
     @Override
     public Set<String> listTopics() throws RemoteException {
-        // TODO sécuriser NEW_TOPICS_TOPIC
         return topics;
     }
 
