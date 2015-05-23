@@ -26,6 +26,8 @@ public class MiniTwitterClient implements MessageListener {
 
     /**
      * Default constructor, creates a new client that subscribes to all the server hash tags.
+     *
+     * @throws JMSException
      */
     public MiniTwitterClient() throws JMSException {
         ConnectionFactory factory = new ActiveMQConnectionFactory(MiniTwitterImpl.ACTIVE_MQ_USER,
@@ -65,6 +67,7 @@ public class MiniTwitterClient implements MessageListener {
      *
      * @param topicName the topic to send the message to
      * @param contents the contents of the message to send
+     * @throws JMSException
      */
     public void sendMessage(String topicName, String contents) throws JMSException {
         MapMessage message = session.createMapMessage();
@@ -134,8 +137,7 @@ public class MiniTwitterClient implements MessageListener {
     }
 
     /**
-     * Passes a message to the listener and prints it. If it is a new topic message, automatically follows the related
-     * new hash tag.
+     * Passes a message to the listener and prints it.
      *
      * @param message the message passed to the listener
      */
