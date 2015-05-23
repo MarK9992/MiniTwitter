@@ -21,7 +21,7 @@ public class MiniTwitterImpl implements MiniTwitter, MessageListener {
 
     /**
      * Default constructor, constructs a new MiniTwitterServer with a default hash tag and the one dedicated to new
-     * ones. Also adds to the users map to users with default subscriptions.
+     * ones.
      */
     public MiniTwitterImpl() {
         try {
@@ -36,8 +36,6 @@ public class MiniTwitterImpl implements MiniTwitter, MessageListener {
             topics.add(DEFAULT_TOPIC);
             topics.add(NEW_TOPICS_TOPIC);
             userTopics = new HashMap<String, Set<String>>();
-            userTopics.put("Marc", new HashSet<String>(topics));
-            userTopics.put("Quentin", new HashSet<String>(topics));
             newTopicsConsumer.setMessageListener(this);
             connect.start();
         } catch (JMSException e) {
