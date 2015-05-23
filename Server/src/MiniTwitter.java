@@ -24,7 +24,6 @@ public interface MiniTwitter extends Remote {
      * of hash tags the matching user follows.
      *
      * @param login the user's login
-     *              TODO add password
      * @return a set of string representing hash tags
      * @throws RemoteException
      */
