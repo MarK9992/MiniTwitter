@@ -1,4 +1,5 @@
 import javax.jms.*;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Calendar;
@@ -95,6 +96,35 @@ public class MiniTwitterClient implements MessageListener {
     }
 
     /**
+     * Subscribes to the given topic.
+     *
+     * @param topicName the name of the topic to subscribe to
+     * @return true on success, false otherwise
+     * @throws JMSException
+     */
+    public boolean subscribeToTopic(String topicName) throws JMSException {
+        for (String subscribedTopic: getTopics()) {
+            if (subscribedTopic.equals(topicName)) {
+                return true;
+            }
+        }
+        try {
+            for (String listedTopic: miniTwitter.listTopics()) {
+                if (listedTopic.equals(topicName)) {
+                    Topic topic = session.createTopic(topicName);
+
+                    session.createConsumer(topic).setMessageListener(this);
+                    topicMap.put(topicName, session.createProducer(topic));
+                    return true;
+                }
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * Returns the hash tags set the user follows.
      *
      * @return the key set of the topicMap attribute
@@ -117,14 +147,6 @@ public class MiniTwitterClient implements MessageListener {
             System.out.println("tweet received, topic: " + mapMessage.getString(TOPIC_KEY) + ", author: "
                     + mapMessage.getString(AUTHOR_KEY) + ", date: " + mapMessage.getString(DATE_KEY)
                     + ", contents: " + mapMessage.getString(CONTENTS_KEY));
-            if (mapMessage.getString(TOPIC_KEY).equals(MiniTwitterImpl.NEW_TOPICS_TOPIC)) {
-                // TODO en réalité faire une fonction "s'abonner" plutôt que de le faire automatiquement
-                String newTopic = mapMessage.getString(NEW_TOPIC_KEY);
-                Topic topic = session.createTopic(newTopic);
-
-                session.createConsumer(topic).setMessageListener(this);
-                topicMap.put(newTopic, session.createProducer(topic));
-            }
         } catch (JMSException e) {
             e.printStackTrace();
         }
