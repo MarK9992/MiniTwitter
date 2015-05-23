@@ -29,8 +29,9 @@ public class Client {
 
             topics.add(MiniTwitterImpl.DEFAULT_TOPIC);
             topics.add(MiniTwitterImpl.NEW_TOPICS_TOPIC);
-            miniTwitterClient = new MiniTwitterClient(miniTwitter, topics, "me");
             scanner = new Scanner(System.in);
+            System.out.println("What's your username?");
+            miniTwitterClient = new MiniTwitterClient(miniTwitter, topics, scanner.nextLine());
         } catch (Exception e) {
             e.printStackTrace();
         }

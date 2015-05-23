@@ -38,13 +38,14 @@ public class MiniTwitterClient implements MessageListener {
         Topic topic;
         MessageConsumer consumer;
 
+        connect.setClientID(userName);
         session = connect.createSession(false, Session.AUTO_ACKNOWLEDGE);
         topicMap = new HashMap<String, MessageProducer>();
         this.miniTwitter = miniTwitter;
         this.userName = userName;
         for (String topicName: topics) {
             topic = session.createTopic(topicName);
-            consumer = session.createConsumer(topic);
+            consumer = session.createDurableSubscriber(topic, userName + topicName);
             topicMap.put(topicName, session.createProducer(topic));
             consumer.setMessageListener(this);
         }
@@ -68,7 +69,7 @@ public class MiniTwitterClient implements MessageListener {
         message.setString(CONTENTS_KEY, contents);
         if (producer == null) {
             Topic topic = session.createTopic(topicName);
-            MessageConsumer consumer = session.createConsumer(topic);
+            MessageConsumer consumer = session.createDurableSubscriber(topic, userName + topicName);
             MapMessage newTopicMessage = session.createMapMessage();
 
             producer = session.createProducer(topic);
@@ -102,7 +103,7 @@ public class MiniTwitterClient implements MessageListener {
                 if (listedTopic.equals(topicName)) {
                     Topic topic = session.createTopic(topicName);
 
-                    session.createConsumer(topic).setMessageListener(this);
+                    session.createDurableSubscriber(topic, userName + topicName).setMessageListener(this);
                     topicMap.put(topicName, session.createProducer(topic));
                     return true;
                 }
