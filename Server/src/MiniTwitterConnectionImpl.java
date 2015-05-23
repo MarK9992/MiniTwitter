@@ -1,3 +1,4 @@
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class MiniTwitterConnectionImpl implements MiniTwitterConnection {
      * @return a MiniTwitter remote interface implementation, null if wrong password
      */
     @Override
-    public MiniTwitter connect(String login, String password) {
+    public MiniTwitter connect(String login, String password)  throws RemoteException {
         if (userMap.containsKey(login)) {
             if (userMap.get(login).equals(password)) {
                 return miniTwitterImpl;

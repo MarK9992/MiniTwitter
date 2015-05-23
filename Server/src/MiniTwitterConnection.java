@@ -1,4 +1,5 @@
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * @author Marc Karassev
@@ -16,5 +17,5 @@ public interface MiniTwitterConnection extends Remote {
      * @param password his password
      * @return a MiniTwitter remote interface implementation, null if wrong password
      */
-    public MiniTwitter connect(String login, String password);
+    public MiniTwitter connect(String login, String password) throws RemoteException;
 }
