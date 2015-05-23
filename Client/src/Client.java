@@ -1,7 +1,9 @@
 import javax.jms.JMSException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * @author Marc Karassev
@@ -14,7 +16,7 @@ public class Client {
     private Scanner scanner;
 
     /**
-     * Connects to the MiniTwitterServer and initializes the client.
+     * Connects to the MiniTwitterServer and initializes a client subscribing to the default topic.
      *
      * @throws JMSException
      */
@@ -23,8 +25,11 @@ public class Client {
             // TODO ask registry host
             Registry registry = LocateRegistry.getRegistry("localhost", Server.REGISTRY_PORT);
             MiniTwitter miniTwitter = (MiniTwitter) registry.lookup(Server.STUB_NAME);
+            Set<String> topics = new HashSet<String>();
 
-            miniTwitterClient = new MiniTwitterClient(miniTwitter, miniTwitter.listTopics(), "me");
+            topics.add(MiniTwitterImpl.DEFAULT_TOPIC);
+            topics.add(MiniTwitterImpl.NEW_TOPICS_TOPIC);
+            miniTwitterClient = new MiniTwitterClient(miniTwitter, topics, "me");
             scanner = new Scanner(System.in);
         } catch (Exception e) {
             e.printStackTrace();
@@ -33,6 +38,8 @@ public class Client {
 
     /**
      * Runs a demonstration scenario.
+     *
+     * @throws JMSException
      */
     public void runDemonstration() throws JMSException {
         boolean run = true;
