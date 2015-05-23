@@ -70,22 +70,25 @@ public class MiniTwitterClient implements MessageListener {
         if (producer == null) {
             Topic topic = session.createTopic(topicName);
             MessageConsumer consumer = session.createDurableSubscriber(topic, userName + topicName);
-            MapMessage newTopicMessage = session.createMapMessage();
 
             producer = session.createProducer(topic);
             topicMap.put(topicName, producer);
             consumer.setMessageListener(this);
             try {
                 miniTwitter.addSubscription(userName, topicName);
+                if (!miniTwitter.listTopics().contains(topicName)) {
+                    MapMessage newTopicMessage = session.createMapMessage();
+
+                    newTopicMessage.setString(TOPIC_KEY, MiniTwitterImpl.NEW_TOPICS_TOPIC);
+                    newTopicMessage.setString(AUTHOR_KEY, userName);
+                    newTopicMessage.setString(DATE_KEY, Calendar.getInstance().getTime().toString());
+                    newTopicMessage.setString(CONTENTS_KEY, "new topic: " + topicName);
+                    newTopicMessage.setString(NEW_TOPIC_KEY, topicName);
+                    topicMap.get(MiniTwitterImpl.NEW_TOPICS_TOPIC).send(newTopicMessage);
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-            newTopicMessage.setString(TOPIC_KEY, MiniTwitterImpl.NEW_TOPICS_TOPIC);
-            newTopicMessage.setString(AUTHOR_KEY, userName);
-            newTopicMessage.setString(DATE_KEY, Calendar.getInstance().getTime().toString());
-            newTopicMessage.setString(CONTENTS_KEY, "new topic: " + topicName);
-            newTopicMessage.setString(NEW_TOPIC_KEY, topicName);
-            topicMap.get(MiniTwitterImpl.NEW_TOPICS_TOPIC).send(newTopicMessage);
         }
         producer.send(message);
     }
