@@ -1,10 +1,9 @@
 import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 /**
- * @author Marc Karassev
+ * @author Marc Karassev, Quentin Cornevin
  *
  * Implements MiniTwitterConnection's remote interface. Keeps track of system's registered users and has a MiniTwitter
  * implementator.
@@ -12,16 +11,18 @@ import java.util.Map;
 public class MiniTwitterConnectionImpl implements MiniTwitterConnection {
 
     private Map<String, String> userMap;
-    private MiniTwitter miniTwitterImpl;
+    private MiniTwitter miniTwitterStub;
 
     /**
-     * Default constructor, constructs a new MiniTwitterConnection with default users.
+     * Constructs a new MiniTwitterConnection with default users and the given MiniTwitter stub.
+     *
+     * @param miniTwitterStub the MiniTwitter stub
      */
-    public MiniTwitterConnectionImpl() {
+    public MiniTwitterConnectionImpl(MiniTwitter miniTwitterStub) {
         userMap = new HashMap<String, String>();
         userMap.put("Marc", "marc");
         userMap.put("Quentin", "quentin");
-        miniTwitterImpl = new MiniTwitterImpl();
+        this.miniTwitterStub = miniTwitterStub;
     }
 
     /**
@@ -36,7 +37,7 @@ public class MiniTwitterConnectionImpl implements MiniTwitterConnection {
     public MiniTwitter connect(String login, String password)  throws RemoteException {
         if (userMap.containsKey(login)) {
             if (userMap.get(login).equals(password)) {
-                return miniTwitterImpl;
+                return miniTwitterStub;
             }
             else {
                 return null;
@@ -44,7 +45,7 @@ public class MiniTwitterConnectionImpl implements MiniTwitterConnection {
         }
         else {
             userMap.put(login, password);
-            return miniTwitterImpl;
+            return miniTwitterStub;
         }
     }
 }

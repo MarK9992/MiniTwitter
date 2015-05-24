@@ -2,7 +2,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * @author Marc Karassev
+ * @author Marc Karassev, Quentin Cornevin
  *
  * MiniTwitter's remote connection interface. Define remote methods available to system's users in order to perform
  * connection.

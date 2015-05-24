@@ -3,7 +3,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
- * @author Marc Karassev
+ * @author Marc Karassev, Quentin Cornevin
  *
  * The server is deployed at port 10 000 of a rmi registry port 2001.
  */
@@ -19,12 +19,15 @@ public class Server {
      */
     public static void main(String[] args) {
         try {
-            MiniTwitterConnection miniTwitterConnectionImpl = new MiniTwitterConnectionImpl();
-            MiniTwitterConnection stub = (MiniTwitterConnection)
+            MiniTwitter miniTwitterImpl = new MiniTwitterImpl();
+            MiniTwitter miniTwitterStub = (MiniTwitter) UnicastRemoteObject.exportObject(miniTwitterImpl,
+                    MINI_TWITTER_PORT);
+            MiniTwitterConnection miniTwitterConnectionImpl = new MiniTwitterConnectionImpl(miniTwitterStub);
+            MiniTwitterConnection miniTwitterConnectionStub = (MiniTwitterConnection)
                     UnicastRemoteObject.exportObject(miniTwitterConnectionImpl, MINI_TWITTER_PORT);
             Registry registry = LocateRegistry.getRegistry(REGISTRY_PORT);
 
-            registry.rebind(STUB_NAME, stub);
+            registry.rebind(STUB_NAME, miniTwitterConnectionStub);
             System.out.println("MiniTwitterConnection bound");
         } catch (Exception e) {
             System.err.println("MiniTwitterConnection exception:");
