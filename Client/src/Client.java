@@ -55,7 +55,8 @@ public class Client {
         boolean run = true;
         System.out.println("Welcome to MiniTwitter!");
         while (run) {
-            System.out.println("What do you want to do?\n1 - Post a tweet\n2 - Follow a new hash tag\n3 - See unread tweet\n4 - Quit");
+            System.out.println("What do you want to do?\n1 - Post a tweet\n2 - Follow a new hash tag\n3 - See unread tweet" +
+                    "\n4 - Retweet \n5 - Quit");
             switch (scanner.nextInt()) {
                 case 1:
                     scanner.nextLine();
@@ -68,7 +69,10 @@ public class Client {
                 case 3:
                     read();
                     break;
-                case 4:
+                case 4 :
+                    retweet(scanner);
+                    break;
+                case 5:
                     run = false;
                     break;
                 default:
@@ -106,11 +110,29 @@ public class Client {
     }
 
     /**
+     * This method call the MiniTwitterClient method to print all the timeline.
      *
      * @throws JMSException
      */
     private void read() throws JMSException {
         miniTwitterClient.readTimeLine();
+    }
+
+    /**
+     *
+     * @throws JMSException
+     */
+    private void retweet(Scanner scanner) throws JMSException {
+        System.out.println("Enter the number of the tweet you want to retweet :");
+        int retweet = scanner.nextInt();
+        if(retweet > miniTwitterClient.getTimeLine().size()) {
+            System.out.println("Sorry put a valid number please.");
+        } else {
+            retweet--;
+            String topicName = miniTwitterClient.getTimeLine().get(retweet).getString("topic");
+            String contents = miniTwitterClient.getTimeLine().get(retweet).getString("contents");
+            miniTwitterClient.sendMessage(topicName, contents);
+        }
     }
 
     /**

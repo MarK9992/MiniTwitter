@@ -21,7 +21,7 @@ public class MiniTwitterClient implements MessageListener {
     private Session session;
     private Map<String, MessageProducer> topicMap;
     private String userName;
-    private List<String> timeLine;
+    private LinkedList<MapMessage> timeLine;
     private int unreadMessage;
 
     /**
@@ -33,7 +33,7 @@ public class MiniTwitterClient implements MessageListener {
      * @throws JMSException
      */
     public MiniTwitterClient(MiniTwitter miniTwitter, Set<String> topics, String userName) throws JMSException {
-        this.timeLine = new ArrayList<String>();
+        this.timeLine = new LinkedList<MapMessage>();
         this.unreadMessage = 0;
         ConnectionFactory factory = new ActiveMQConnectionFactory(MiniTwitterImpl.ACTIVE_MQ_USER,
                 MiniTwitterImpl.ACTIVE_MQ_PASSWORD, MiniTwitterImpl.ACTIVE_MQ_HOST);
@@ -145,44 +145,53 @@ public class MiniTwitterClient implements MessageListener {
     }
 
     /**
-     * Passes a message to the listener and prints it.
+     * Passes a message to the listener and add it to the timeline. If there is more than 300 tweet in the timeline,
+     * the older one is delete.
      *
      * @param message the message passed to the listener
      */
     @Override
     public void onMessage(Message message) {
         MapMessage mapMessage = (MapMessage) message;
-
-        // TODO très sale, le message reçu devrait être stocké et lu à la demande de l'utilisateur dans la démonstration
         try {
             this.unreadMessage++;
             String tweet = "tweet received, topic: " + mapMessage.getString(TOPIC_KEY) + ", author: "
                     + mapMessage.getString(AUTHOR_KEY) + ", date: " + mapMessage.getString(DATE_KEY)
                     + ", contents: " + mapMessage.getString(CONTENTS_KEY);
-            /*
-            System.out.println("tweet received, topic: " + mapMessage.getString(TOPIC_KEY) + ", author: "
-                    + mapMessage.getString(AUTHOR_KEY) + ", date: " + mapMessage.getString(DATE_KEY)
-                    + ", contents: " + mapMessage.getString(CONTENTS_KEY));
-                    */
             System.out.println("The number of unread tweet is : " + unreadMessage);
-            timeLine.add(tweet);
+            if(timeLine.size() < 300) {
+                timeLine.add(mapMessage);
+            } else {
+                timeLine.removeFirst();
+                timeLine.add(mapMessage);
+            }
         } catch (JMSException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     *
+     * This method print the timeline with all the unread tweet.
      */
-    public void readTimeLine() {
+    public void readTimeLine() throws JMSException {
+        System.out.println("\n -----------------");
         if(unreadMessage > 0) {
-            for (String tweet : timeLine) {
-                System.out.println(tweet);
+            for (int i = 0; i < timeLine.size(); i++) {
+                MapMessage mapMessage = timeLine.get(i);
+                String tweet = "tweet received, topic: " + mapMessage.getString(TOPIC_KEY) + ", author: "
+                        + mapMessage.getString(AUTHOR_KEY) + ", date: " + mapMessage.getString(DATE_KEY)
+                        + ", contents: " + mapMessage.getString(CONTENTS_KEY);
+
+                System.out.println(i + 1 + " - " + tweet);
             }
-            timeLine.clear();
+            System.out.println("-----------------");
             unreadMessage = 0;
         } else {
             System.out.println("Sorry there is no unread tweet !");
         }
+    }
+
+    public LinkedList<MapMessage> getTimeLine() {
+        return timeLine;
     }
 }
