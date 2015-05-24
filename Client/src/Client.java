@@ -55,7 +55,7 @@ public class Client {
         boolean run = true;
         System.out.println("Welcome to MiniTwitter!");
         while (run) {
-            System.out.println("What do you want to do?\n1 - Post a tweet\n2 - Follow a new hash tag\n3 - Quit");
+            System.out.println("What do you want to do?\n1 - Post a tweet\n2 - Follow a new hash tag\n3 - See unread tweet\n4 - Quit");
             switch (scanner.nextInt()) {
                 case 1:
                     scanner.nextLine();
@@ -66,6 +66,9 @@ public class Client {
                     follow();
                     break;
                 case 3:
+                    read();
+                    break;
+                case 4:
                     run = false;
                     break;
                 default:
@@ -100,6 +103,14 @@ public class Client {
         else {
             System.out.println("Failed to subscribe to " + topic + ", the hash tag probably does not exist.");
         }
+    }
+
+    /**
+     *
+     * @throws JMSException
+     */
+    private void read() throws JMSException {
+        miniTwitterClient.readTimeLine();
     }
 
     /**

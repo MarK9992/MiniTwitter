@@ -1,8 +1,8 @@
+import org.apache.activemq.ActiveMQConnectionFactory;
+
 import javax.jms.*;
 import java.rmi.RemoteException;
 import java.util.*;
-
-import org.apache.activemq.ActiveMQConnectionFactory;
 
 /**
  * @author Marc Karassev
@@ -21,6 +21,8 @@ public class MiniTwitterClient implements MessageListener {
     private Session session;
     private Map<String, MessageProducer> topicMap;
     private String userName;
+    private List<String> timeLine;
+    private int unreadMessage;
 
     /**
      * Creates a new client that subscribes to all the given hash tags.
@@ -31,6 +33,8 @@ public class MiniTwitterClient implements MessageListener {
      * @throws JMSException
      */
     public MiniTwitterClient(MiniTwitter miniTwitter, Set<String> topics, String userName) throws JMSException {
+        this.timeLine = new ArrayList<String>();
+        this.unreadMessage = 0;
         ConnectionFactory factory = new ActiveMQConnectionFactory(MiniTwitterImpl.ACTIVE_MQ_USER,
                 MiniTwitterImpl.ACTIVE_MQ_PASSWORD, MiniTwitterImpl.ACTIVE_MQ_HOST);
         Connection connect = factory.createConnection(MiniTwitterImpl.ACTIVE_MQ_USER,
@@ -151,11 +155,34 @@ public class MiniTwitterClient implements MessageListener {
 
         // TODO très sale, le message reçu devrait être stocké et lu à la demande de l'utilisateur dans la démonstration
         try {
+            this.unreadMessage++;
+            String tweet = "tweet received, topic: " + mapMessage.getString(TOPIC_KEY) + ", author: "
+                    + mapMessage.getString(AUTHOR_KEY) + ", date: " + mapMessage.getString(DATE_KEY)
+                    + ", contents: " + mapMessage.getString(CONTENTS_KEY);
+            /*
             System.out.println("tweet received, topic: " + mapMessage.getString(TOPIC_KEY) + ", author: "
                     + mapMessage.getString(AUTHOR_KEY) + ", date: " + mapMessage.getString(DATE_KEY)
                     + ", contents: " + mapMessage.getString(CONTENTS_KEY));
+                    */
+            System.out.println("The number of unread tweet is : " + unreadMessage);
+            timeLine.add(tweet);
         } catch (JMSException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     *
+     */
+    public void readTimeLine() {
+        if(unreadMessage > 0) {
+            for (String tweet : timeLine) {
+                System.out.println(tweet);
+            }
+            timeLine.clear();
+            unreadMessage = 0;
+        } else {
+            System.out.println("Sorry there is no unread tweet !");
         }
     }
 }
