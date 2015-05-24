@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.util.Set;
 
 /**
- * @author Marc Karassev
+ * @author Marc Karassev, Quentin Cornevin
  *
  * MiniTwitter's remote interface. Defines remote methods available to system's users.
  */

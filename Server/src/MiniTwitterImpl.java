@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 import java.util.*;
 
 /**
- * @author Marc Karassev
+ * @author Marc Karassev, Quentin Cornevin
  *
  * Implements MiniTwitter's remote interface.
  * Keeps track of hashtags list and user's subscribed hashtags.

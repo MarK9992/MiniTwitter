@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Marc Karassev
+ * @author Marc Karassev, Quentin Cornevin
  *
  * Implements MiniTwitterConnection's remote interface. Keeps track of system's registered users and has a MiniTwitter
  * implementator.
