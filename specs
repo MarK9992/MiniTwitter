@@ -1,6 +1,6 @@
 Fonctionnel :
 - un utilisateur doit pouvoir poster un Tweet DONE
-- un utilisateur doit pouvoir retweeter un Tweet
+- un utilisateur doit pouvoir retweeter un Tweet DONE
 - un utilisateur doit pouvoir se connecter/déconnecter pour accéder aux fonctionnalités (proxy) DONE
 - un utilisateur doit être notifié quand son tweet est retweeté ou qu'un nouveau topic/hashtag est créé DONE
 - un utilisateur doit pouvoir consulter les notifications qu'il aurait dû recevoir durant son absence (déconnecté) DONE
