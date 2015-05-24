@@ -1,6 +1,8 @@
 import javax.jms.JMSException;
+import javax.jms.MapMessage;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -55,7 +57,7 @@ public class Client {
         boolean run = true;
         System.out.println("Welcome to MiniTwitter!");
         while (run) {
-            System.out.println("What do you want to do?\n1 - Post a tweet\n2 - Follow a new hash tag\n3 - See unread tweet" +
+            System.out.println("What do you want to do?\n1 - Post a tweet\n2 - Follow a new hash tag\n3 - See tweets" +
                     "\n4 - Retweet \n5 - Quit");
             switch (scanner.nextInt()) {
                 case 1:
@@ -116,15 +118,19 @@ public class Client {
 
     // allows the user to retweet
     private void retweet(Scanner scanner) throws JMSException {
+        List<MapMessage> timeLine = miniTwitterClient.getTimeLine();
         System.out.println("Enter the number of the tweet you want to retweet:");
         int retweet = scanner.nextInt();
         scanner.nextLine();
-        if(retweet > miniTwitterClient.getTimeLine().size()) {
+        if(retweet > timeLine.size()) {
             System.out.println("Sorry, put a valid number please.");
         } else {
             retweet--;
-            String topicName = miniTwitterClient.getTimeLine().get(retweet).getString("topic");
-            String contents = miniTwitterClient.getTimeLine().get(retweet).getString("contents");
+            MapMessage tweet = timeLine.get(retweet);
+            String topicName = tweet.getString(MiniTwitterClient.TOPIC_KEY);
+            String contents = "retweeted from " + tweet.getString(MiniTwitterClient.AUTHOR_KEY) + " at "
+                    + tweet.getString(MiniTwitterClient.DATE_KEY) + ": "
+                    + tweet.getString(MiniTwitterClient.CONTENTS_KEY);
             miniTwitterClient.sendMessage(topicName, contents);
         }
     }

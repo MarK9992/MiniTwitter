@@ -166,7 +166,7 @@ public class MiniTwitterClient implements MessageListener {
     }
 
     /**
-     * This method prints the time line with all the unread tweets.
+     * This method prints the time line with all the last 300 tweets.
      */
     public void readTimeLine() throws JMSException {
         // TODO move output to Client class
@@ -183,7 +183,7 @@ public class MiniTwitterClient implements MessageListener {
             System.out.println("-----------------");
             unreadMessages = 0;
         } else {
-            System.out.println("Sorry there is no unread tweet !");
+            System.out.println("Sorry there is no unread tweets!");
         }
     }
 
