@@ -4,7 +4,7 @@ import java.rmi.registry.Registry;
 import java.util.Scanner;
 
 /**
- * @author Marc Karassev
+ * @author Marc Karassev, Quentin Cornevin
  *
  * Demonstration of client application to MiniTwitter.
  */
@@ -109,24 +109,18 @@ public class Client {
         }
     }
 
-    /**
-     * This method call the MiniTwitterClient method to print all the timeline.
-     *
-     * @throws JMSException
-     */
+    //calls the MiniTwitterClient method to print all the timeline
     private void read() throws JMSException {
         miniTwitterClient.readTimeLine();
     }
 
-    /**
-     *
-     * @throws JMSException
-     */
+    // allows the user to retweet
     private void retweet(Scanner scanner) throws JMSException {
-        System.out.println("Enter the number of the tweet you want to retweet :");
+        System.out.println("Enter the number of the tweet you want to retweet:");
         int retweet = scanner.nextInt();
+        scanner.nextLine();
         if(retweet > miniTwitterClient.getTimeLine().size()) {
-            System.out.println("Sorry put a valid number please.");
+            System.out.println("Sorry, put a valid number please.");
         } else {
             retweet--;
             String topicName = miniTwitterClient.getTimeLine().get(retweet).getString("topic");
